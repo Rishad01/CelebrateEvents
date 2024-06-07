@@ -163,16 +163,17 @@ vendor.post('/login',(req,res)=>{
 
     vendor.post('/storeBid',jwtAuthMiddleware,(req,res)=>{
       const{event_id,bidAmt,proposal}=req.body;
-      const userid=req.userid;
+      const userid=req.userid.id;
       console.log(userid);
       console.log(req.body);
       const bidId=generateBidId();
-      const sql="INSERT INTO bids (bid_id, vendor_id, event_id, bidAmt, proposal) VALUES (? ,?, ?, ?, ?)";
+      const insertBidSql=`INSERT INTO bids (bid_id, vendor_id, event_id, bidAmt, proposal) VALUES (? ,?, ?, ?, ?)`;
 
       
-            db.query(insertBidSql, [userid, event_id, bidAmt, proposal], (err, data) => {
+            db.query(insertBidSql, [bidId, userid, event_id, bidAmt, proposal], (err, data) => {
                if (err) {
                  return db.rollback(() => {
+                  console.error(err);
                    res.status(500).json({ message: "Server side error" });
                  });
                }
@@ -180,7 +181,7 @@ vendor.post('/login',(req,res)=>{
                // Calculate highest, lowest, and average bids
                const calcBidSql = `
                  SELECT 
-                   
+                   COUNT(*) AS bidCount,
                    MAX(bidAmt) as highestBid, 
                    MIN(bidAmt) as lowestBid, 
                    AVG(bidAmt) as avgBid 
@@ -196,20 +197,21 @@ vendor.post('/login',(req,res)=>{
                    });
                  }
          
-                 const { highestBid, lowestBid, avgBid } = results[0];
+                 const { bidCount, highestBid, lowestBid, avgBid } = results[0];
          
                  // Update the bid with the calculated values
                  const updateBidSql = `
                    UPDATE 
                      bids 
                    SET 
-                     highestBid = ?, 
-                     lowestBid = ?, 
+                     bidNum = ?,
+                     highBid = ?, 
+                     lowBid = ?, 
                      avgBid = ? 
                    WHERE 
                      event_id = ?`;
          
-                 db.query(updateBidSql, [highestBid, lowestBid, avgBid, event_id], (err, results) => {
+                 db.query(updateBidSql, [bidCount, highestBid, lowestBid, avgBid, event_id], (err, results) => {
                    if (err) {
                      return db.rollback(() => {
                        res.status(500).json({ message: "Server side error" });
