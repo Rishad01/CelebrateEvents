@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import { Container, Row, Col, Button, Card, Badge } from "react-bootstrap";
 const events=[
@@ -127,18 +128,36 @@ function ProposedEventCard(props)
 
 function ProposedEvents()
 {
+    const [events,setEvents]=React.useState([]);
+
+    React.useEffect(()=>{
+
+        const getEvents=async ()=>{
+            try{
+                const response=await axios.get(`http://localhost:5000/vendor/postedEvents`);
+                console.log(response.data);
+                if(response.data)
+                    {
+                        setEvents(response.data);
+                    }
+            }catch(err){
+                console.error(err);
+            }
+        }
+
+        getEvents();
+    },[]);
     return(
         <Container>
             <Row>
                 <Col>
-                    {events.map((event)=>
+                    {events.map((event,index)=>
                     <ProposedEventCard 
-                        name={event.name}
+                        key={index}
+                        event_id={event.event_id}
+                        user_id={event.user_id}
+                        name={event.event}
                         budget={event.budget}
-                        avg_bid={event.avg_bid}
-                        highest_bid={event.highest_bid}
-                        lowest_bid={event.lowest_bid}
-                        bid_num={event.bid_num}
                     />
                     )}
                 </Col>
