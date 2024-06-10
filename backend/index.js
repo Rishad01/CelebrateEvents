@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import http from 'http';
+import { Server } from 'socket.io';
 import router from "./client.js";
 import vendor from "./vendor.js"
 import cookieParser from "cookie-parser";
@@ -7,6 +9,14 @@ import bcrypt from 'bcrypt';
 import db from "./db.js";
 import jwt from "jsonwebtoken";
  const app=express(); 
+ const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
  app.use(express.json()); // Parse JSON bodies
  app.use(cookieParser());
  app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
