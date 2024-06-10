@@ -266,4 +266,54 @@ vendor.post('/login',(req,res)=>{
             
       })
     });
+
+    vendor.get('/proposedEvents',jwtAuthMiddleware,(req,res)=>{
+      const vendor_id=req.userid.id;
+      const sql='SELECT * FROM bids WHERE vendor_id=?';
+      db.query(sql,[vendor_id],(err,data)=>{
+         if(err){
+             return res.json({
+                 message:"server side error"
+              });
+         }
+         //console.log(data);
+         if(data.length > 0)
+         {
+            return res.json(data);
+         }
+         else
+         {
+             return res.json({
+                 message:"No events available"
+              })
+         }
+     })
+    });
+
+    vendor.get('/getEvent/:event_id',(req,res)=>{
+      const event_id=req.params.event_id;
+
+      const sql='SELECT * FROM eventlist WHERE event_id=?';
+
+      db.query(sql,[event_id],(err,data)=>{
+         if(err)
+            {
+               //console.error('SQL query error:', err);
+               return res.json({
+                  message:"server side error"
+               });
+            }
+
+            if(data.length > 0)
+               {
+                  return res.json(data);
+               }
+               else
+               {
+                   return res.json({
+                       message:"Event is finalized by someone else"
+                    })
+               }
+      })
+    })
  export default vendor;

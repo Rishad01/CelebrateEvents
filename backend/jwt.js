@@ -7,7 +7,7 @@ const jwtAuthMiddleware=(req,res,next)=>{
 
     if(!authheader)
         {
-            //console.log(req.headers);
+            console.log(req.headers);
             return res.status(401).json({ error: 'Token not found'});
         }
         

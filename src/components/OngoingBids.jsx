@@ -1,109 +1,56 @@
 import axios from "axios";
 import React from "react";
 import { Container, Row, Col, Button, Card, Badge } from "react-bootstrap";
-const events=[
-    {
-        name:"Event1",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event2",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event3",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event4",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event5",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event6",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event7",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event8",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event9",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    },{
-        name:"Event10",
-        budget:10000,
-        avg_bid:12000,
-        highest_bid:15000,
-        lowest_bid:10500,
-        bid_num:10
-    }
-];
 
 function ProposedEventCard(props)
 {
-    const [bid_num,setbid_num]=React.useState(props.bid_num);
+    const [event,setEvent]=React.useState([]);
 
-    React.useEffect(() => {
-        setbid_num(props.bid_num);
-    }, [props.bid_num]);
+    React.useEffect(()=>{
+
+        const getEvent=async ()=>{
+
+            const token=localStorage.getItem('token');
+
+            try{
+                const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`);
+                console.log(response.data);
+                if(response.data)
+                    {
+                        setEvent(response.data[0]);
+                    }
+                    else{
+                        console.log(response.message);
+                    }
+                }catch(err){
+                console.error(err);
+            }
+        }
+        console.log(event);
+        getEvent();
+    },[]);
     return(
     <Container className="mx-auto w-75 mb-3">
         <Card className="shadow-lg">
             <Card.Body>
             <Row>
             <Col>
-                <h3>{props.name}</h3>
+                <h3>{event.event}</h3>
             </Col>
             <Col className="d-flex justify-content-end">
-                <h2>Budget:{props.budget}</h2>
+                <h2>Budget:{event.budget}</h2>
             </Col>
             </Row>
             <Container>
             <Row>
                 <Col className="mx-auto d-flex justify-content-start">
-                    <p>Lowest Bid:{props.lowest_bid}</p>
+                    <p>Lowest Bid:{props.lowBid}</p>
                 </Col>
                 <Col className="mx-auto d-flex justify-content-center">
-                    <p>Avg. Bid:{props.avg_bid}</p>
+                    <p>Avg. Bid:{props.avgBid}</p>
                 </Col>
                 <Col className="mx-auto d-flex justify-content-end">
-                    <p>Highest Bid:{props.highest_bid}</p>
+                    <p>Highest Bid:{props.highBid}</p>
                 </Col>
             </Row>
             </Container>
@@ -112,7 +59,7 @@ function ProposedEventCard(props)
             <h6>
             No. of Bids: 
             <Badge pill className="mx-1" bg="dark">
-                {bid_num}
+                {props.bidNum}
             </Badge>
             </h6>
             </Col>
@@ -128,36 +75,47 @@ function ProposedEventCard(props)
 
 function ProposedEvents()
 {
-    const [events,setEvents]=React.useState([]);
+    const [bids,setBids]=React.useState([]);
 
     React.useEffect(()=>{
 
-        const getEvents=async ()=>{
+        const getBids=async ()=>{
+
+            const token=localStorage.getItem('token');
+
             try{
-                const response=await axios.get(`http://localhost:5000/vendor/postedEvents`);
+                const response=await axios.get(`http://localhost:5000/vendor/proposedEvents`,{
+                    headers:{
+                        'Authorization':`Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 console.log(response.data);
                 if(response.data)
                     {
-                        setEvents(response.data);
+                        setBids(response.data);
                     }
             }catch(err){
                 console.error(err);
             }
         }
 
-        getEvents();
+        getBids();
     },[]);
     return(
         <Container>
             <Row>
                 <Col>
-                    {events.map((event,index)=>
+                    {bids.map((bid,index)=>
                     <ProposedEventCard 
                         key={index}
-                        event_id={event.event_id}
-                        user_id={event.user_id}
-                        name={event.event}
-                        budget={event.budget}
+                        event_id={bid.event_id}
+                        bid_id={bid.user_id}
+                        vendor_id={bid.vendor_id}
+                        highBid={bid.highBid}
+                        avgBid={bid.avgBid}
+                        lowBid={bid.lowBid}
+                        bidNum={bid.bidNum}
                     />
                     )}
                 </Col>
