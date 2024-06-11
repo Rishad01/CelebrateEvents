@@ -27,6 +27,7 @@ function Client()
                 console.log(response);
                 if(response.data.status=="Authenticated"){
                     setUser_id(response.data.id);
+                    localStorage.setItem('token',response.data.id);
                     //console.log(user_id);
                 }
             else{

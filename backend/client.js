@@ -56,4 +56,28 @@ router.get('/getPostedEvents/:user_id',(req,res)=>{
     })
 });
 
+router.get('/getBids/:event_id',(req,res)=>{
+    console.log(req.params.event_id);
+    const event_id=req.params.event_id;
+    const sql='SELECT * FROM bids WHERE event_id=?';
+
+    db.query(sql,[event_id],(err,data)=>{
+        if(err){
+            return res.json({
+                message:"serever side error"
+             });
+        }
+        if(data.length > 0)
+        {
+            return res.json(data);
+        }
+        else
+        {
+            return res.json({
+                message:"No bids available"
+             })
+        }
+    })
+});
+
 export default router;

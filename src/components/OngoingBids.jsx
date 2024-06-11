@@ -1,10 +1,13 @@
 import axios from "axios";
 import React from "react";
+import Chat from "./Chat";
 import { Container, Row, Col, Button, Card, Badge } from "react-bootstrap";
 
 function ProposedEventCard(props)
 {
     const [event,setEvent]=React.useState([]);
+    const [sendMessage,setsendMessage]=React.useState(false);
+
 
     React.useEffect(()=>{
 
@@ -14,9 +17,10 @@ function ProposedEventCard(props)
 
             try{
                 const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`);
-                console.log(response.data);
+                //console.log(response.data);
                 if(response.data)
                     {
+                        //console.log(response.data[0]);
                         setEvent(response.data[0]);
                     }
                     else{
@@ -28,7 +32,12 @@ function ProposedEventCard(props)
         }
         console.log(event);
         getEvent();
-    },[]);
+    },[props.event_id]);
+
+    const handleSendMessage = () => {
+        setsendMessage(true);
+    };
+
     return(
     <Container className="mx-auto w-75 mb-3">
         <Card className="shadow-lg">
@@ -64,8 +73,15 @@ function ProposedEventCard(props)
             </h6>
             </Col>
             <Col className="d-flex justify-content-end" xs={3}>
-                <Button variant="btn btn-dark">Message</Button>
+                <Button onClick={handleSendMessage} variant="btn btn-dark">Message</Button>
             </Col>
+            {sendMessage && <Chat 
+                event_id={event.event_id}
+                client_id={event.user_id}
+                vendor_id={props.vendor_id}
+                onHide={() => setsendMessage(false)}
+                senderType='vendor'
+            />}
             </Row>
             </Card.Body>
         </Card>    
