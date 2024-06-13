@@ -160,6 +160,78 @@ function generateUserId() {
       });
    });
 
- app.listen(5000,()=>{
+   io.on('connection', (socket) => {
+      console.log('A user connected:', socket.id);
+    
+      socket.on('joinRoom', async ({ roomId }) => {
+        socket.join(roomId);
+        console.log(`User with socket ID ${socket.id} joined room ${roomId}`);
+    
+        // Fetch messages for the room from the database and send them to the client
+        const sql = "SELECT * FROM chatmessages WHERE room_id = ?";
+        db.query(sql, [roomId], (err, results) => {
+          if (err) {
+            console.error('Error fetching messages:', err);
+            return;
+          }
+          socket.emit('previousMessages', results);
+        });
+      });
+    
+      socket.on('sendMessage', ({ roomId, message, userId, senderType }) => {
+        const timestamp = new Date().toISOString();
+        // Store the message in the database
+        const sql = "INSERT INTO chatmessages (room_id, user_id, sender_type, message, timestamp) VALUES (?, ?, ?, ?, ?)";
+        db.query(sql, [roomId, userId, senderType, message, timestamp], (err) => {
+          if (err) {
+            console.error('Error storing message:', err);
+            return;
+          }
+          // Emit the message to all clients in the room
+          io.to(roomId).emit('receiveMessage', { message, userId, senderType, timestamp });
+        });
+      });
+    
+      socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+      });
+    });
+    
+    function generateRoomId() {
+      return `ROOM_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    app.post('/createRoom/:eventId/:vendorId/:clientId', (req, res) => {
+      const { eventId, vendorId, clientId } = req.params;
+    
+      // Check if the room already exists
+      const checkRoomSql = "SELECT room_id FROM chatrooms WHERE event_id = ? AND vendor_id = ? AND client_id = ?";
+      db.query(checkRoomSql, [eventId, vendorId, clientId], (err, results) => {
+        if (err) {
+          console.error('Error checking room:', err);
+          return res.status(500).json({ message: 'Server side error' });
+        }
+    
+        if (results.length > 0) {
+          // Room already exists, return existing room ID
+          const roomId = results[0].room_id;
+          return res.json({ roomId });
+        } else {
+          // Room does not exist, create a new one
+          const roomId = generateRoomId();
+          const sql = "INSERT INTO chatrooms (room_id, event_id, vendor_id, client_id) VALUES (?, ?, ?, ?)";
+          db.query(sql, [roomId, eventId, vendorId, clientId], (err) => {
+            if (err) {
+              console.error('Error inserting data:', err);
+              return res.status(500).json({ message: 'Server side error' });
+            }
+            return res.json({ roomId });
+          });
+        }
+      });
+    });
+    
+
+ server.listen(5000,()=>{
    console.log('listening...');
  });

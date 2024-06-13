@@ -7,6 +7,7 @@ import axios from "axios";
 function Event(props){
 
     const[bids,setBids]=React.useState([]);
+    //console.log(localStorage.getItem('token'));
     React.useEffect(() => {
         const fetchBids = async () => {
             try {

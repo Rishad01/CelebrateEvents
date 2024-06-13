@@ -75,7 +75,8 @@ function ProposedEventCard(props)
             <Col className="d-flex justify-content-end" xs={3}>
                 <Button onClick={handleSendMessage} variant="btn btn-dark">Message</Button>
             </Col>
-            {sendMessage && <Chat 
+            {sendMessage && <Chat
+                show={sendMessage} 
                 event_id={event.event_id}
                 client_id={event.user_id}
                 vendor_id={props.vendor_id}
