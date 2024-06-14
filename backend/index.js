@@ -178,8 +178,9 @@ function generateUserId() {
         });
       });
     
-      socket.on('sendMessage', ({ roomId, message, userId, senderType }) => {
+      socket.on('sendMessage', async ({ roomId, message, userId, senderType }) => {
         const timestamp = new Date().toISOString();
+        const sender_type=senderType;
         // Store the message in the database
         const sql = "INSERT INTO chatmessages (room_id, user_id, sender_type, message, timestamp) VALUES (?, ?, ?, ?, ?)";
         db.query(sql, [roomId, userId, senderType, message, timestamp], (err) => {
@@ -188,7 +189,7 @@ function generateUserId() {
             return;
           }
           // Emit the message to all clients in the room
-          io.to(roomId).emit('receiveMessage', { message, userId, senderType, timestamp });
+          io.to(roomId).emit('receiveMessage', { message, userId, sender_type, timestamp });
         });
       });
     

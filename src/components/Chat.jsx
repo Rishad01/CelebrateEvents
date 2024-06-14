@@ -1,7 +1,7 @@
 import React, { useState, useEffect }from "react";
 import io from 'socket.io-client';
 import axios from "axios";
-import {Modal} from "react-bootstrap";
+import {Container, Modal, Row, Col, Form, Button} from "react-bootstrap";
 
 const socket = io('http://localhost:5000');
 
@@ -36,14 +36,13 @@ function Chat(props) {
         }
 
       socket.on('previousMessages', (previousMessages) => {
-        console.log('previous mesg fetched');
+        //console.log('previous mesg fetched');
         setMessages(previousMessages);
-        console.log(previousMessages);
+        //console.log(previousMessages);
       });
 
       socket.on('receiveMessage', (data) => {
-        console.log('received mesg');
-        setMessages((prevMessages) => [...prevMessages, data]);
+        setMessages((prevMessages) => [...prevMessages, data]);      
       });
 
       return () => {
@@ -53,11 +52,12 @@ function Chat(props) {
     }
   }, [roomId]);
 
-  const sendMessage = () => {
+
+  const sendMessage = async () => {
     if (message && roomId) {
         const senderType=props.senderType;
       const userId = props.senderType == 'client' ? props.client_id : props.vendor_id; // Use the appropriate ID
-      socket.emit('sendMessage', { roomId, message, userId, senderType });
+      await socket.emit('sendMessage', { roomId, message, userId, senderType });
       setMessage('');
     }
   };
@@ -76,23 +76,37 @@ function Chat(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <div>
-                <div className="message-container">
+            <Container style={{maxHeight:'400px', overflowY:'auto'}}>
+                
                     {messages.map((msg, index) => (
-                        
-                    <div key={index} className={msg.senderType == 'client' ? 'client-message' : 'vendor-message'}>
-                        <strong>{msg.sender_type}:</strong> {msg.message}
-                    </div>
+                      <Row>
+
+                        <Col  className={`rounded d-flex justify-content-${msg.sender_type === props.senderType ? 'end' : 'start'}`}>
+                            <div className={`p-1 rounded ${msg.sender_type === props.senderType ?'alert alert-info':'alert alert-warning'}`}>
+                            <strong>{msg.sender_type}:</strong> {msg.message}
+                            </div>
+                        </Col>
+                      </Row>
                     ))}
-                </div>
-                <input 
-                    type="text" 
-                    value={message} 
-                    onChange={(e) => setMessage(e.target.value)} 
-                    placeholder="Type your message here..."
-                />
-                <button onClick={sendMessage}>Send</button>
-            </div>
+                    </Container>
+              <Container>
+                <Row className="mt-2 justify-content-evenly">
+                  <Col xs={11}>
+                    <Form className="px-1">
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control 
+                          type="text" 
+                          value={message} 
+                          onChange={(e) => setMessage(e.target.value)} 
+                          placeholder="Type your message here..." />
+                      </Form.Group>
+                    </Form>
+                  </Col>
+                  <Col xs={1} className="">
+                  <Button variant="outline-dark" onClick={sendMessage}><i class="bi bi-send"></i></Button>
+                  </Col>
+                </Row>
+                </Container>
         </Modal.Body>
       </Modal>
     );
