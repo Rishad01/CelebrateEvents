@@ -315,5 +315,29 @@ vendor.post('/login',(req,res)=>{
                     })
                }
       })
-    })
+    });
+
+    vendor.post('/reviseOffer',(req,res)=>{
+      const{bid_id,revisedOffer}=req.body;
+      console.log(req.body);
+      const sql='UPDATE bids SET bidAmt=? WHERE bid_id=?';
+      db.query(sql,[revisedOffer,bid_id],(err,data)=>{
+         if(err){
+            return res.json({
+                message:"server side error"
+             });
+        }
+        if(data)
+         {
+            console.log(data);
+            return res.json({ status: 'success' });
+         }
+         else
+         {
+             return res.json({
+                 message:"not updated"
+              })
+         }
+      })
+    });
  export default vendor;

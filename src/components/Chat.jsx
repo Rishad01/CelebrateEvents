@@ -76,7 +76,7 @@ function Chat(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Container style={{maxHeight:'400px', overflowY:'auto'}}>
+            <Container style={{height:'400px',maxHeight:'400px', overflowY:'auto'}}>
                 
                     {messages.map((msg, index) => (
                       <Row>
