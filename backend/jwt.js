@@ -4,16 +4,16 @@ import { secretKey } from './config.js';
 const jwtAuthMiddleware=(req,res,next)=>{
     //console.log('jwt');
     const authheader=req.headers.authorization;
-
     if(!authheader)
         {
-            console.log(req.headers);
+            console.log('token not found');
             return res.status(401).json({ error: 'Token not found'});
         }
         
     const token=authheader.split(' ')[1];
-        if(!token)
+        if(!token){
             return res.status(401).json({ error: 'unauthorized'});
+        }
 
         try{
             const decoded=jwt.verify(token,secretKey);

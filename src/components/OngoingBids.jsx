@@ -20,7 +20,12 @@ function ProposedEventCard(props)
             const token=localStorage.getItem('token');
 
             try{
-                const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`);
+                const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`,{
+                    headers:{
+                        'Authorization':`Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 //console.log(response.data);
                 if(response.data)
                     {
@@ -116,7 +121,7 @@ function ProposedEventCard(props)
                 senderType='vendor'
             />}
             </Row>
-            <Row>
+            {props.bidStatus=="ongoing" && <Row>
             <Col className="d-flex justify-content-start" xs={4} >
                 <Form.Group className="mb-3">
                 <Form.Control type="number" placeholder="revised offer" name='revisedOffer' onChange={handleChange}/>
@@ -127,7 +132,7 @@ function ProposedEventCard(props)
                     Submit
                 </Button>
             </Col>
-            </Row>
+            </Row>}
             </Container>
             </Card.Body>
         </Card>    
@@ -144,7 +149,7 @@ function ProposedEvents()
         const getBids=async ()=>{
 
             const token=localStorage.getItem('token');
-
+            console.log(token);
             try{
                 const response=await axios.get(`http://localhost:5000/vendor/proposedEvents`,{
                     headers:{
@@ -179,6 +184,7 @@ function ProposedEvents()
                         avgBid={bid.avgBid}
                         lowBid={bid.lowBid}
                         bidNum={bid.bidNum}
+                        bidStatus={bid.bidStatus}
                     />
                     )}
                 </Col>

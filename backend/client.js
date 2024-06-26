@@ -45,7 +45,7 @@ router.get('/getPostedEvents/:user_id',(req,res)=>{
         }
         if(data.length > 0)
         {
-            return res.json(data);
+            return res.json({events:data,message:"Events available"});
         }
         else
         {
@@ -79,5 +79,72 @@ router.get('/getBids/:event_id',(req,res)=>{
         }
     })
 });
+
+router.put('/closeDeal/:vendor_id/:event_id', (req, res) => {
+    const { vendor_id, event_id } = req.params;
+
+    const sqlAward = `
+        UPDATE bids
+        SET status = 'awarded'
+        WHERE vendor_id = ? AND event_id = ?;
+    `;
+
+    const sqlNotAward = `
+        UPDATE bids
+        SET status = 'not awarded'
+        WHERE event_id = ? AND vendor_id != ?;
+    `;
+
+    // Start a transaction
+    db.beginTransaction(err => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Transaction start failed',
+                error: err.message
+            });
+        }
+
+        // First update to set 'awarded' status
+        db.query(sqlAward, [vendor_id, event_id], (err, result) => {
+            if (err) {
+                return db.rollback(() => {
+                    return res.status(500).json({
+                        message: 'Error updating to awarded status',
+                        error: err.message
+                    });
+                });
+            }
+
+            // Second update to set 'not awarded' status
+            db.query(sqlNotAward, [event_id, vendor_id], (err, result) => {
+                if (err) {
+                    return db.rollback(() => {
+                        return res.status(500).json({
+                            message: 'Error updating to not awarded status',
+                            error: err.message
+                        });
+                    });
+                }
+
+                // Commit the transaction
+                db.commit(err => {
+                    if (err) {
+                        return db.rollback(() => {
+                            return res.status(500).json({
+                                message: 'Transaction commit failed',
+                                error: err.message
+                            });
+                        });
+                    }
+
+                    return res.json({
+                        message: 'status changed'
+                    });
+                });
+            });
+        });
+    });
+});
+
 
 export default router;

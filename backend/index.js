@@ -23,7 +23,7 @@ const io = new Server(server, {
  app.use(cors(
    {
       origin:["http://localhost:3000"],
-      methods:["POST", "GET"],
+      methods:["POST", "GET","PUT"],
       credentials:true,
       allowedHeaders: 'Authorization,Content-Type'
    }

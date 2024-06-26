@@ -28,10 +28,10 @@ vendor.post('/login',(req,res)=>{
              if (result) {
                //console.log('jwt');
                 const id={id:data[0].vendor_id};
-                const token = generateToken(id);
+                const vendor_token = generateToken(id);
                 return res.json({
                    status:"success",
-                   token: token
+                   vendor_token : vendor_token 
                 });
              } 
              else 
@@ -55,7 +55,6 @@ vendor.post('/login',(req,res)=>{
  
  vendor.get('/authenticate',jwtAuthMiddleware,(req,res)=>{
    const userid=req.userid;
-   //console.log(userid);
    if(userid.id){
     return res.json({
        status:"Authenticated",

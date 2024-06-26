@@ -58,6 +58,7 @@ function Event(props){
                                 bidAmt={data.bidAmt}
                                 event_id={data.event_id}
                                 proposal={data.proposal}
+                                bidStatus={data.status}
                             />
                         ))}
                     </ListGroup>
@@ -77,11 +78,11 @@ function EventCard()
             try {
                 const response = await axios.get(`http://localhost:5000/client/getPostedEvents/${token}`);
                 console.log(response.data);
-                if (response.status === 200) {
-                    setdataItems(response.data);
+                if (response.data.message === 200) {
+                    setdataItems(response.data.events);
                     console.log('Events fetched successfully');
                 } else {
-                    console.log(response.data.message);
+                    alert(response.data.message);
                 }
             } catch (error) {
                 console.log('Error occurred:', error);

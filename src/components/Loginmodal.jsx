@@ -15,9 +15,8 @@ function LoginModal(props)
       event.preventDefault();
       try {
         const response = await axios.post('http://localhost:5000/vendor/login', values);
-        console.log(response);
         if(response.data.status=='success'){
-          localStorage.setItem('token',response.data.token);
+          localStorage.setItem('vendor_token',response.data.vendor_token);
           navigate('/vendorSection'); 
         }
       }

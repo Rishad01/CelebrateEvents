@@ -29,7 +29,7 @@ function VendorSection()
     const navigate=useNavigate();
     React.useEffect(()=>{
         const logout=async()=>{
-            const token=localStorage.getItem('token');
+            const token=localStorage.getItem('vendor_token');
             try{
                 const response=await axios.get('http://localhost:5000/vendor/authenticate', {
                     headers: {
@@ -37,7 +37,6 @@ function VendorSection()
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log(response);
                 if(response.data.status=='Authenticated')
                   setlogoutbtn(true); 
                 else
