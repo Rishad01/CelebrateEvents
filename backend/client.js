@@ -95,6 +95,8 @@ router.put('/closeDeal/:vendor_id/:event_id', (req, res) => {
         WHERE event_id = ? AND vendor_id != ?;
     `;
 
+    const sqlVendorProj=`INSERT INTO projects (vendor_id,event_id) VALUES (?,?)`;
+
     // Start a transaction
     db.beginTransaction(err => {
         if (err) {
@@ -126,6 +128,17 @@ router.put('/closeDeal/:vendor_id/:event_id', (req, res) => {
                     });
                 }
 
+            db.query(sqlVendorProj,[vendor_id,event_id], (err,result)=>{
+                if(err)
+                    {
+                        return db.rollback(() => {
+                            return res.status(500).json({
+                                message: 'Error registering vendor project',
+                                error: err.message
+                            })
+                    });
+            }});
+                
                 // Commit the transaction
                 db.commit(err => {
                     if (err) {

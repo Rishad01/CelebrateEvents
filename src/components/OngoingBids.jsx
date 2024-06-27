@@ -133,7 +133,7 @@ function ProposedEventCard(props)
                     Submit
                 </Button>
             </Col>
-            </Row>:<p>Event awarded to you</p>}
+            </Row>:<p>{props.bidStatus}</p>}
             </Container>
             </Card.Body>
         </Card>    
