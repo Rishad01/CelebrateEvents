@@ -51,7 +51,7 @@ function VendorSection()
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("vendor_token");
         navigate('/vendor');
     };
     return(

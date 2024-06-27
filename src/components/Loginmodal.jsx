@@ -17,6 +17,7 @@ function LoginModal(props)
         const response = await axios.post('http://localhost:5000/vendor/login', values);
         if(response.data.status=='success'){
           localStorage.setItem('vendor_token',response.data.vendor_token);
+          console.log(localStorage.getItem('vendor_token'));
           navigate('/vendorSection'); 
         }
       }

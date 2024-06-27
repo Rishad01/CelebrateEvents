@@ -77,12 +77,12 @@ function EventCard()
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/client/getPostedEvents/${token}`);
-                console.log(response.data);
-                if (response.data.message === 200) {
+                console.log(response.data.events);
+                if (response.data.message == "Events available") {
                     setdataItems(response.data.events);
                     console.log('Events fetched successfully');
                 } else {
-                    alert(response.data.message);
+                    alert("No Events Available");
                 }
             } catch (error) {
                 console.log('Error occurred:', error);

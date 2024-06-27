@@ -17,8 +17,8 @@ function ProposedEventCard(props)
 
         const getEvent=async ()=>{
 
-            const token=localStorage.getItem('token');
-
+            const token=localStorage.getItem('vendor_token');
+            console.log(props.bidStatus);
             try{
                 const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`,{
                     headers:{
@@ -121,7 +121,8 @@ function ProposedEventCard(props)
                 senderType='vendor'
             />}
             </Row>
-            {props.bidStatus=="ongoing" && <Row>
+            
+            {props.bidStatus=='ongoing'?<Row>
             <Col className="d-flex justify-content-start" xs={4} >
                 <Form.Group className="mb-3">
                 <Form.Control type="number" placeholder="revised offer" name='revisedOffer' onChange={handleChange}/>
@@ -132,7 +133,7 @@ function ProposedEventCard(props)
                     Submit
                 </Button>
             </Col>
-            </Row>}
+            </Row>:<p>Event awarded to you</p>}
             </Container>
             </Card.Body>
         </Card>    
@@ -148,8 +149,7 @@ function ProposedEvents()
 
         const getBids=async ()=>{
 
-            const token=localStorage.getItem('token');
-            console.log(token);
+            const token=localStorage.getItem('vendor_token');
             try{
                 const response=await axios.get(`http://localhost:5000/vendor/proposedEvents`,{
                     headers:{
@@ -157,6 +157,7 @@ function ProposedEvents()
                         'Content-Type': 'application/json'
                     }
                 });
+                console.log('hello');
                 console.log(response.data);
                 if(response.data)
                     {
@@ -184,7 +185,7 @@ function ProposedEvents()
                         avgBid={bid.avgBid}
                         lowBid={bid.lowBid}
                         bidNum={bid.bidNum}
-                        bidStatus={bid.bidStatus}
+                        bidStatus={bid.status}
                     />
                     )}
                 </Col>
