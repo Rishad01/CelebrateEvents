@@ -90,7 +90,7 @@ function BidCard(props)
     const [descriptionShow, setdescriptionShow] = React.useState(false);
     const [bidSubmitted,setbidSubmitted] = React.useState(false);
     React.useEffect(()=>{
-      const token=localStorage.getItem('token');
+      const token=localStorage.getItem('vendor_token');
       const checkBid=async ()=>{
         try{
           const response=await axios.get(`http://localhost:5000/vendor/checkBidStatus/${props.event_id}`,{
@@ -122,7 +122,7 @@ function BidCard(props)
     }
     const handleSubmit=async ()=>{
       console.log(values);
-      const token=localStorage.getItem('token');
+      const token=localStorage.getItem('vendor_token');
       try{
         const response=await axios.post('http://localhost:5000/vendor/storeBid', values,{
           headers:{
