@@ -12,11 +12,13 @@ function Event(props){
         const fetchBids = async () => {
             try {
                 const event_id=props.event_id;
+                //console.log(event_id);
                 const response = await axios.get(`http://localhost:5000/client/getBids/${event_id}`);
-                console.log(response.data);
-                if (response.status === 200) {
-                    setBids(response.data);
-                    console.log('Bids fetched successfully');
+                //console.log(response);
+                if (response.status === 200 && response.data.events.length>0) {
+                    setBids(response.data.events);
+                    //console.log(bids);
+                    //console.log('Bids fetched successfully');
                 } else {
                     console.log(response.data.message);
                 }
@@ -78,7 +80,7 @@ function EventCard()
             try {
                 const response = await axios.get(`http://localhost:5000/client/getPostedEvents/${token}`);
                 console.log(response.data.events);
-                if (response.data.message == "Events available") {
+                if (response.data.message == "Events available" && Array.isArray(response.data.events)) {
                     setdataItems(response.data.events);
                     console.log('Events fetched successfully');
                 } else {

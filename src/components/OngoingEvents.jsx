@@ -95,7 +95,7 @@ function PostedEvents(props)
                 const response = await axios.get(`http://localhost:5000/client/getPostedEvents/${props.user_id}`);
                 console.log(response.data);
                 if (response.status == 200) {
-                    setdataItems(response.data);
+                    setdataItems(response.data.events);
                     console.log('Events fetched successfully');
                 } else {
                     console.log(response.data.message);
@@ -110,7 +110,7 @@ function PostedEvents(props)
     return(<Container>
         <Row>
             <Col>
-                {dataItems.map((dataItem,index)=>
+                {dataItems.map((dataItem,index)=>(
                 <PostedEvent 
                     key={index}
                     id={index}
@@ -121,7 +121,7 @@ function PostedEvents(props)
                     budget={dataItem.budget}
                     guestNum={dataItem.guestNum}
                     descr={dataItem.descr}
-                />
+                />)
                 )}
             </Col>
         </Row>

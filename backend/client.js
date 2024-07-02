@@ -40,7 +40,7 @@ router.get('/getPostedEvents/:user_id',(req,res)=>{
     db.query(sql,[user_id],(err,data)=>{
         if(err){
             return res.json({
-                message:"serever side error"
+                message:"server side error"
              });
         }
         if(data.length > 0)
@@ -69,7 +69,7 @@ router.get('/getBids/:event_id',(req,res)=>{
         }
         if(data.length > 0)
         {
-            return res.json(data);
+            return res.json({events:data});
         }
         else
         {
