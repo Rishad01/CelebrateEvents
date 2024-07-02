@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Nav, Card, Row, Col, Modal, Button} from "react-bootstrap";
+import axios from "axios";
 
 const Compevents=[
     {
@@ -25,35 +26,9 @@ const Compevents=[
     }
 ];
 
-const Ongoingevents=[
-    {
-        name:"Birthday",
-        date:"01-01-2001",
-        location:"Lucknow",
-        estimate:5000,
-        description:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse potenti nullam ac tortor vitae. Purus semper eget duis at tellus at urna. Diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus. Bibendum enim facilisis gravida neque convallis a cras. Ipsum consequat nisl vel pretium. Fermentum et sollicitudin ac orci phasellus. Blandit aliquam etiam erat velit. Enim lobortis scelerisque fermentum dui faucibus in ornare. Risus pretium quam vulputate dignissim suspendisse in est ante. Massa sapien faucibus et molestie. Nunc congue nisi vitae suscipit. Pellentesque habitant morbi tristique senectus. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Id leo in vitae turpis massa sed elementum. Ullamcorper morbi tincidunt ornare massa eget."
-    },{
-        name:"Wedding",
-        date:"02-02-2002",
-        location:"Kolkata",
-        estimate:100000,
-        description:"Ante metus dictum at tempor commodo. Sed risus pretium quam vulputate dignissim suspendisse in est. Egestas egestas fringilla phasellus faucibus scelerisque eleifend donec. Amet dictum sit amet justo donec. Venenatis tellus in metus vulputate eu scelerisque felis imperdiet proin. Nulla aliquet enim tortor at. Ut morbi tincidunt augue interdum velit. Quam lacus suspendisse faucibus interdum posuere lorem ipsum. Augue mauris augue neque gravida in fermentum et sollicitudin. Interdum consectetur libero id faucibus nisl tincidunt eget nullam. Elit pellentesque habitant morbi tristique senectus et netus. Adipiscing elit ut aliquam purus sit. Volutpat odio facilisis mauris sit. Scelerisque viverra mauris in aliquam sem. Augue neque gravida in fermentum et. Aliquet lectus proin nibh nisl condimentum id."
-    },{
-        name:"Promotion Party",
-        date:"03-03-2003",
-        location:"Lucknow",
-        estimate:100000,
-        description:"Erat velit scelerisque in dictum non consectetur a erat. Imperdiet nulla malesuada pellentesque elit eget. Placerat vestibulum lectus mauris ultrices eros in cursus. Egestas sed sed risus pretium quam. Felis bibendum ut tristique et egestas quis. Egestas pretium aenean pharetra magna. Vitae congue mauris rhoncus aenean vel elit. Commodo sed egestas egestas fringilla. A erat nam at lectus urna duis convallis. Eros donec ac odio tempor orci dapibus ultrices in. Turpis egestas maecenas pharetra convallis posuere morbi leo urna molestie. In fermentum et sollicitudin ac orci. Turpis egestas integer eget aliquet nibh praesent tristique magna. Tristique senectus et netus et. Dapibus ultrices in iaculis nunc sed augue. Donec et odio pellentesque diam volutpat commodo sed egestas. Magna fermentum iaculis eu non diam phasellus vestibulum lorem sed. Porttitor leo a diam sollicitudin tempor id. Nibh praesent tristique magna sit amet. Consectetur a erat nam at lectus urna duis."
-    },{
-        name:"Festival Celebration",
-        date:"04-04-2004",
-        location:"xyz",
-        estimate:20000,
-        description:"Venenatis tellus in metus vulputate eu scelerisque felis imperdiet. Felis imperdiet proin fermentum leo vel orci porta non. In nulla posuere sollicitudin aliquam ultrices sagittis orci a scelerisque. Ut tellus elementum sagittis vitae. Viverra mauris in aliquam sem fringilla. Quisque non tellus orci ac auctor augue. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac. Ullamcorper a lacus vestibulum sed arcu non odio euismod. Vitae purus faucibus ornare suspendisse sed. Sit amet porttitor eget dolor. Fermentum leo vel orci porta non pulvinar neque laoreet. Id diam vel quam elementum pulvinar etiam non. In est ante in nibh mauris. Bibendum ut tristique et egestas quis. Tincidunt praesent semper feugiat nibh sed pulvinar. Maecenas volutpat blandit aliquam etiam erat velit scelerisque. Mollis nunc sed id semper risus in hendrerit gravida. Felis imperdiet proin fermentum leo vel orci. A erat nam at lectus. Amet mauris commodo quis imperdiet massa tincidunt nunc."
-    }
-];
 
 function EventDescription(props) {
+
     return (
       <Modal
         {...props}
@@ -82,6 +57,35 @@ function EventDescription(props) {
 function OngoingEventCard(props)
 {
     const [descriptionShow, setdescriptionShow] = React.useState(false);
+    const [eventInfo,setEventInfo]=React.useState([]);
+    const [estimate,setEstimate]=React.useState('');
+
+    React.useEffect(()=>{
+        const fetchEvents=async()=>{
+            try{
+                const response=await axios.get(`http://localhost:5000/vendor/getEvent/${props.event_id}`);
+                if(response.data && response.data.length > 0)
+                    {
+                        setEventInfo(response.data[0]);
+                    }
+            }catch(err){
+                console.error(err);
+            }
+        }
+        fetchEvents();
+    },[]);
+        React.useEffect(()=>{
+        const fetchEstimate=async()=>{
+            try{
+                const response=await axios.get(`http://localhost:5000/vendor/getEstimate/${props.event_id}/${props.vendor_id}`);
+                setEstimate(response.data);
+            }catch(err)
+            {
+                console.error(err);
+            }
+        }
+        fetchEstimate();
+    },[]);
     return(
         
     <Container className="mx-auto w-75 mb-3">
@@ -89,26 +93,27 @@ function OngoingEventCard(props)
             <Card.Body>
             <Row className="mb-2">
                 <Col>
-                <h3>{props.name}</h3>
+                <h3>{eventInfo.event}</h3>
                 </Col>
                 <Col className="d-flex justify-content-end">
-                <h4>Estimate: &#8377;{props.estimate}</h4>
+                <h4>Estimate: &#8377;{estimate}</h4>
                 </Col>
             </Row>
             <Row className="mb-2">
                         <Col>
-                             <h5>Date: {props.date}</h5>
+                        
+                             <h5>Date: {eventInfo.date}</h5>
                         </Col>
                         <Col className="d-flex justify-content-center">
-                             <h5>Location: {props.location}</h5>
+                             <h5>Location: {eventInfo.location}</h5>
                         </Col>
                         <Col className="d-flex justify-content-end">
-                            <Button variant="outline-dark" onClick={()=>setdescriptionShow(true)}>Description</Button>
+                            <Button style={{height:'40px'}} variant="outline-dark" onClick={()=>setdescriptionShow(true)}>Description</Button>
                         </Col>
                         <EventDescription
                             show={descriptionShow}
                             onHide={() => setdescriptionShow(false)}
-                            description={props.description}
+                            description={eventInfo.descr}
                         />
                     </Row>
                     
@@ -142,6 +147,65 @@ function ShowMyprojects()
 {
     const [ongoingEvents,setongoingEvents]=React.useState(true);
     const [completedEvents,setcompletedEvents]=React.useState(false);
+    const [ongoingEventsArr,setOngoingEventsArr]=React.useState([]);
+    const [completedEventsArr,setCompletedEventsArr]=React.useState([]);
+    const [events,setEvents]=React.useState([]);
+
+    React.useEffect(()=>{
+        const token=localStorage.getItem('vendor_token');
+        const fetchEvents=async()=>{
+            try{
+                const response=await axios.get('http://localhost:5000/vendor/getOngoingEvents',{
+                    headers:{
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                //console.log(response.data.events);
+                if(response.data.message=="success")
+                    {
+                        //console.log(response.data.events);
+                      setOngoingEventsArr(response.data.events);
+                    }
+                else if(response.data.message=="no data present")
+                    {
+                        console.log(response.data.message);
+                    }
+            }catch(err){
+                console.error(err);
+            }
+        }
+
+        fetchEvents();
+    },[ongoingEvents]);
+
+    React.useEffect(()=>{
+        const token=localStorage.getItem('vendor_token');
+        const fetchEvents=async()=>{
+            try{
+                const response=await axios.get('http://localhost:5000/vendor/getCompletedEvents',{
+                    headers:{
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                //console.log(response.data.events);
+                if(response.data.message=="success")
+                    {
+                        //console.log(response.data.events);
+                      setCompletedEventsArr(response.data.events);
+                    }
+                else if(response.data.message=="no data present")
+                    {
+                        console.log(response.data.message);
+                    }
+            }catch(err){
+                console.error(err);
+            }
+        }
+
+        fetchEvents();
+    },[completedEvents]);
 
     function handleOngoingClick()
     {
@@ -156,7 +220,7 @@ function ShowMyprojects()
     }
 
     return(
-        <Container>
+        <Container fluid>
         <Nav justify variant="tabs" defaultActiveKey="/home">
       <Nav.Item>
         <Nav.Link onClick={handleOngoingClick} eventKey="link-1">Ongoing Events</Nav.Link>
@@ -174,16 +238,15 @@ function ShowMyprojects()
                 <Container>
                     <Row>
                         <Col>
-                            {Ongoingevents.map((event)=>
-                            <OngoingEventCard 
-                                name={event.name}
-                                date={event.date}
-                                location={event.location}
-                                estimate={event.estimate} 
-                                description={event.description} 
-                                offer={event.offer}
+                            {ongoingEventsArr.
+                            map((event)=>(<OngoingEventCard 
+                                key={event.event_id}
+                                event_id={event.event_id}
+                                vendor_id={event.vendor_id}
+                                feedback={event.feedback}
+                                reveiw={event.review}
                             />
-                            )}
+                            ))}
                         </Col>
                     </Row>
                 </Container>
@@ -195,7 +258,7 @@ function ShowMyprojects()
                 <Container>
                     <Row>
                         <Col>
-                            {Compevents.map((event)=>
+                            {completedEventsArr.map((event)=>
                             <CompletedEventCard 
                                 name={event.name}
                             />

@@ -302,7 +302,7 @@ vendor.post('/login',(req,res)=>{
                   message:"server side error"
                });
             }
-
+            
             if(data.length > 0)
                {
                   return res.json(data);
@@ -339,4 +339,74 @@ vendor.post('/login',(req,res)=>{
          }
       })
     });
+
+    vendor.get('/getOngoingEvents',jwtAuthMiddleware,(req,res)=>{
+      const vendor_id=req.userid.id;
+
+      const sql="SELECT * FROM projects WHERE vendor_id=? AND status='ongoing'";
+
+      db.query(sql,[vendor_id],(err,result)=>{
+         if(err)
+            {
+               return res.json({
+                message:"server side error"});
+            }
+         if(result.length>0)
+            {
+               return res.json({
+                  message:"success",
+                  events:result
+               });
+            }
+         else{
+            return res.json({
+               message:"no data present"
+            })
+         }
+      })
+    });
+
+    vendor.get('/getCompletedEvents',jwtAuthMiddleware,(req,res)=>{
+      const vendor_id=req.userid.id;
+
+      const sql="SELECT * FROM projects WHERE vendor_id=? AND status='completed'";
+
+      db.query(sql,[vendor_id],(err,result)=>{
+         if(err)
+            {
+               return res.json({
+                message:"server side error"});
+            }
+         if(result.length>0)
+            {
+               return res.json({
+                  message:"success",
+                  events:result
+               });
+            }
+         else{
+            return res.json({
+               message:"no data present"
+            })
+         }
+      })
+    });
+
+
+    vendor.get('/getEstimate/:event_id/:vendor_id',(req,res)=>{
+      const{event_id,vendor_id}=req.params;
+
+      const sql='SELECT bidAmt FROM bids WHERE event_id=? AND vendor_id=?';
+
+      db.query(sql,[event_id,vendor_id],(err,result)=>{
+         if(err)
+            {
+               return res.json({
+                message:"server side error"});
+            }
+
+         return res.json(result[0].bidAmt);
+      })
+    });
+
  export default vendor;
