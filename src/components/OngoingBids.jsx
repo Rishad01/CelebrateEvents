@@ -157,7 +157,7 @@ function ProposedEvents()
                         'Content-Type': 'application/json'
                     }
                 });
-                
+                console.log(response);
                 if(response.data.message=='success')
                     {
                         setBids(response.data.events);

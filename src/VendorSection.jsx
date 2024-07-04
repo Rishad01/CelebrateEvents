@@ -25,7 +25,7 @@ function VendorSection()
     const [showPortfolio,setshowPortfolio]=React.useState(false);
     const [showFeedback,setshowFeedback]=React.useState(false);
     const [showReview,setshowReview]=React.useState(false);
-
+    const [id,setId]=React.useState('');
     const navigate=useNavigate();
     React.useEffect(()=>{
         const logout=async()=>{
@@ -38,7 +38,10 @@ function VendorSection()
                     }
                 });
                 if(response.data.status=='Authenticated')
-                  setlogoutbtn(true); 
+                    {
+                       setId(response.data.id);
+                       setlogoutbtn(true);
+                    } 
                 else
                   navigate('/vendor');
               }
@@ -77,6 +80,7 @@ function VendorSection()
             setshowReview={setshowReview}
             />
             </Col>
+            {id}
             <Col className="d-flex justify-content-end">
             {logoutbtn && <Button className="mt-2" variant="outline-dark" style={{maxHeight:'40px'}} onClick={handleLogout}>Logout</Button>}
             </Col>

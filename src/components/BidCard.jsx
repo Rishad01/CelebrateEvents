@@ -89,6 +89,7 @@ function BidCard(props)
     const [proposalShow, setproposalShow] = React.useState(false); 
     const [descriptionShow, setdescriptionShow] = React.useState(false);
     const [bidSubmitted,setbidSubmitted] = React.useState(false);
+    const [bidAwarded,setBidAwarded]= React.useState(false);
     React.useEffect(()=>{
       const token=localStorage.getItem('vendor_token');
       const checkBid=async ()=>{
@@ -101,8 +102,11 @@ function BidCard(props)
           }
           );
           console.log(response);
-
-          if(response.data.status =='set')
+          if(response.data.status =='awarded')
+            {
+              setBidAwarded(true);
+            }
+          else if(response.data.status =='set')
             {
               console.log(response);
               setbidSubmitted(true);
@@ -145,7 +149,8 @@ function BidCard(props)
     
     const navigate=useNavigate();
     return(
-        <Container className="mx-auto w-75 mb-3">
+      <div>
+        {!bidAwarded && <Container className="mx-auto w-75 mb-3">
         <Card className="shadow-lg">
             <Card.Body>
                 <Container>
@@ -207,7 +212,8 @@ function BidCard(props)
                 </Container>
             </Card.Body>
         </Card>
-        </Container>
+        </Container>}
+        </div>
     );
 }
 

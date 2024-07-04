@@ -234,40 +234,57 @@ vendor.post('/login',(req,res)=>{
     vendor.get('/checkBidStatus/:event_id',jwtAuthMiddleware,(req,res)=>{
       const event_id=req.params.event_id;
       const vendor_id=req.userid.id;
-      const sql='SELECT COUNT(*) AS bidCount FROM bids WHERE vendor_id=? AND event_id=?';
 
-      db.query(sql,[vendor_id,event_id],(err,data)=>{
+      const sqlstatus1="SELECT * FROM bids WHERE event_id=? AND status='awarded'";
+      db.query(sqlstatus1,[event_id],(err,data)=>{
          if(err)
             {
-               //console.error('SQL query error:', err);
                return res.json({
                   message:"server side error"
                });
             }
-            //console.log(data);
-            const bidCount = data[0].bidCount;
-            //console.log(bidCount);
-            if (bidCount > 0)
+         if(data.length>0)
             {
-               try{
-                  return res.json({
-                     status:"set"
-                  });
-                 }catch (jsonError) {
-                    console.error('Error sending JSON response:', jsonError);
-                    return res.status(500).json({ message: "Error sending JSON response" });
-                  }
+               return res.json({
+                  status:"awarded"
+               });
             }
-            else
-            {
 
-            }
-            
-      })
-    });
+         else{
+            const sqlstatus2='SELECT COUNT(*) AS bidCount FROM bids WHERE vendor_id=? AND event_id=?';
+
+         db.query(sqlstatus2,[vendor_id,event_id],(err,data)=>{
+            if(err)
+               {
+                  return res.json({
+                     message:"server side error"
+                  });
+               }
+               const bidCount = data[0].bidCount;
+               if (bidCount > 0)
+               {
+                  try{
+                     return res.json({
+                        status:"set"
+                     });
+                  }catch (jsonError) {
+                     console.error('Error sending JSON response:', jsonError);
+                     return res.status(500).json({ message: "Error sending JSON response" });
+                     }
+               }
+               else
+               {
+
+               }
+               
+         })
+       }
+      });
+   });
 
     vendor.get('/proposedEvents',jwtAuthMiddleware,(req,res)=>{
       const vendor_id=req.userid.id;
+      console.log(vendor_id);
       const sql='SELECT * FROM bids WHERE vendor_id=?';
       db.query(sql,[vendor_id],(err,data)=>{
          if(err){
@@ -275,7 +292,7 @@ vendor.post('/login',(req,res)=>{
                  message:"server side error"
               });
          }
-         //console.log(data);
+         console.log(data);
          if(data.length > 0)
          {
             return res.json({events:data,message:'success'});
