@@ -21,7 +21,7 @@ function VendorSignUp()
           const response = await axios.post('http://localhost:5000/vendor/signup', values);
           console.log(response);
           if(response.data.status=='success'){
-            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('vendor_token',response.data.token);
             navigate('/vendorSection'); 
           }
        } catch (error) {
