@@ -157,12 +157,12 @@ function ProposedEvents()
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log('hello');
-                console.log(response.data);
-                if(response.data)
+                
+                if(response.data.message=='success')
                     {
-                        setBids(response.data);
+                        setBids(response.data.events);
                     }
+                
             }catch(err){
                 console.error(err);
             }
@@ -174,7 +174,7 @@ function ProposedEvents()
         <Container>
             <Row>
                 <Col>
-                    {bids.map((bid,index)=>
+                    {bids.length>0?(bids.map((bid,index)=>
                     <ProposedEventCard 
                         key={index}
                         event_id={bid.event_id}
@@ -187,7 +187,7 @@ function ProposedEvents()
                         bidNum={bid.bidNum}
                         bidStatus={bid.status}
                     />
-                    )}
+                    )):<h3>No proposed Events!</h3>}
                 </Col>
             </Row>
         </Container>

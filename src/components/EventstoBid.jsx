@@ -38,9 +38,9 @@ function Bids()
         try{
             const response=await axios.get('http://localhost:5000/vendor/postedEvents');
             console.log(response);
-                if(response.data){
+                if(response.data.message=='success'){
                     setcheckEvent(true);
-                    setpostedEvents(response.data);
+                    setpostedEvents(response.data.events);
                 }
                 else
                     console.log(response.message);

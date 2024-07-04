@@ -51,7 +51,7 @@ function Event(props){
                         </Col>
                     </Row>
                     <ListGroup variant="flush" className="bg-dark-subtle">
-                        {bids.map((data,index)=>(
+                        {bids?bids.map((data,index)=>(
                             <Bid 
                                 key={index}
                                 bid_id={data.bid_id}
@@ -62,7 +62,7 @@ function Event(props){
                                 proposal={data.proposal}
                                 bidStatus={data.status}
                             />
-                        ))}
+                        )):<h3>No events available!</h3>}
                     </ListGroup>
                 </Container>
             </Card.Body>

@@ -136,7 +136,7 @@ vendor.post('/login',(req,res)=>{
          }
          if(data.length > 0)
          {
-            return res.json(data);
+            return res.json({events:data,message:'success'});
          }
          else
          {
@@ -278,12 +278,12 @@ vendor.post('/login',(req,res)=>{
          //console.log(data);
          if(data.length > 0)
          {
-            return res.json(data);
+            return res.json({events:data,message:'success'});
          }
          else
          {
              return res.json({
-                 message:"No events available"
+                 message:"No Proposed Events available"
               })
          }
      })
